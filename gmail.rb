@@ -28,4 +28,10 @@ end
 Gmail = Google::Apis::GmailV1
 gmail = Gmail::GmailService.new
 gmail.authorization = oauth_credentials(Gmail::AUTH_SCOPE, ENV['GOOGLE_CLIENT_ID'], ENV['GOOGLE_CLIENT_SECRET'])
-p gmail.list_user_messages(ENV["EMAIL"])
+messages = gmail.list_user_messages(ENV["EMAIL"]).messages
+message_index = messages.first
+message = gmail.get_user_message(ENV["EMAIL"], message_index.id)
+subject = message.payload.headers.find{|header| header.name == "Subject" }
+p subject.value
+body = message.payload.parts.first.body.data
+p body.force_encoding("UTF-8")
